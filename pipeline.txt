@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout code from GitHub
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/salim-zepcom/imrant.git']]])
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                // Build your application (e.g., using Maven, Gradle)
+                sh 'mvn clean package'
+            }
+        }
+        
+        stage('Code Analysis') {
+            steps {
+                // Execute SonarQube analysis
+                withSonarQubeEnv('SonarQube_Server_Name') {
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                // Perform deployment steps if needed
+                // e.g., deploy to a server, cloud platform, etc.
+            }
+        }
+    }
+}
